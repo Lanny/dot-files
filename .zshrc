@@ -58,3 +58,6 @@ function fine { find . -name "*$1*" }
 
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
+
+# Disable the thing where typing a director name cds into it
+unsetopt AUTO_CD
