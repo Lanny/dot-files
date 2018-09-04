@@ -1,0 +1,85 @@
+#!/usr/bin/env zsh
+
+PLAIN_TEMP=$(mktemp)
+CIPHR_TEMP=$(mktemp)
+EDITOR=/usr/local/Cellar/macvim/8.0-143/MacVim.app/Contents/bin/../MacOS/Vim
+declare -a EDITOR_ARGS=("-f" "-c" ":call English()")
+
+function usage {
+  notify "Usage: $0 [--visual] file\nStarts editing of a file. Signs contents of the file in place after editor exits."
+  exit 1
+}
+
+function notify {
+  if [ $VISUAL_MODE -ne 0 ]; then
+    osascript -e "tell app \"System Events\" to display dialog \"$1\""
+  else
+    >&2 echo "error"
+  fi
+}
+
+# Transform long options to short ones
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    "--visual") set -- "$@" "-v" ;;
+    *)        set -- "$@" "$arg"
+  esac
+done
+
+# Default behavior
+VISUAL_MODE=0
+
+# Parse short options
+OPTIND=1
+while getopts "hv" opt
+do
+  case "$opt" in
+    "h") usage; exit 0 ;;
+    "v") VISUAL_MODE=1 ;;
+    "?") print_usage >&2; exit 1 ;;
+  esac
+done
+shift $(expr $OPTIND - 1) 
+
+if [ -z "$1" ]; then
+  notify "Missing file argument."
+  exit 1
+fi
+
+TARGET=$1
+
+if [ $VISUAL_MODE -ne 0 ]; then
+  EDITOR_ARGS+=('-g')
+fi
+
+$EDITOR $EDITOR_ARGS $TARGET
+editor_rc=$?
+if [ $editor_rc -ne 0 ]; then
+  notify "Editor exited with status code: $editor_rc" 
+  exit 2
+fi
+
+cp $TARGET $PLAIN_TEMP
+cp_rc=$?
+
+if [ $cp_rc -ne 0 ]; then
+  notify "Failed to copy edited file to: $PLAIN_TEMP" 
+  exit 3
+fi
+
+echo "$GPG_TTY"
+echo "$TTY"
+
+gpg --clear-sign -u Lanny --batch --yes --output $CIPHR_TEMP $PLAIN_TEMP
+gpg_rc=$?
+
+if [ $gpg_rc -ne 0 ]; then
+  notify "Signing failed. A temporary plaintext file is stored at: $PLAIN_TEMP"
+  exit 4
+fi
+
+mv $CIPHR_TEMP $TARGET
+
+exit 0
+
