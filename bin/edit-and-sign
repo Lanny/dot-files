@@ -12,9 +12,38 @@ function usage {
 
 function notify {
   if [ $VISUAL_MODE -ne 0 ]; then
-    osascript -e "tell app \"System Events\" to display dialog \"$1\""
+    osascript -e "tell app \"System Events\" to display alert \"$1\" with title \"Error\" as critical"
   else
     >&2 echo $1
+  fi
+}
+
+function prompt {
+  if [ 4 -gt "$#" ]; then
+    title="Prompt"
+    yes="Yes"
+    no="No"
+  else
+    title=$2
+    yes=$3
+    no=$4
+  fi
+
+  if [ $VISUAL_MODE -ne 0 ]; then
+    set -x
+    ascript="tell app \"System Events\" to display dialog \"$1\" with title \"$title\" buttons{\"$yes\", \"$no\"} default button 1 cancel button 2"
+    echo $ascript
+    osascript -e $ascript #&> /dev/null
+    response=$?
+    return $(( response ^ 1 ))
+  else
+    echo -n "$1 [Y/n]"
+    read answer
+    if [ "$answer" != "${answer#[Nn]}" ] ;then
+      return 0
+    else
+      return 1
+    fi
   fi
 }
 
@@ -23,20 +52,23 @@ for arg in "$@"; do
   shift
   case "$arg" in
     "--visual") set -- "$@" "-v" ;;
+    "--prompt") set -- "$@" "-p" ;;
     *)        set -- "$@" "$arg"
   esac
 done
 
 # Default behavior
 VISUAL_MODE=0
+PROMPT_SIGN=0
 
 # Parse short options
 OPTIND=1
-while getopts "hv" opt
+while getopts "hvp" opt
 do
   case "$opt" in
     "h") usage; exit 0 ;;
     "v") VISUAL_MODE=1 ;;
+    "p") PROMPT_SIGN=1 ;;
     "?") print_usage >&2; exit 1 ;;
   esac
 done
@@ -58,6 +90,7 @@ else
   export PINENTRY_USER_DATA="USE_CURSES=1"
 fi
 
+
 $EDITOR $EDITOR_ARGS $TARGET
 editor_rc=$?
 if [ $editor_rc -ne 0 ]; then
@@ -73,15 +106,25 @@ if [ $cp_rc -ne 0 ]; then
   exit 3
 fi
 
-gpg --clear-sign -u Lanny --batch --yes --output $CIPHR_TEMP $PLAIN_TEMP
-gpg_rc=$?
+should_sign=1
 
-if [ $gpg_rc -ne 0 ]; then
-  notify "Signing failed. A temporary plaintext file is stored at: $PLAIN_TEMP"
-  exit 4
+if [ $PROMPT_SIGN -ne 0 ]; then
+  prompt "Should I sign you message? Refusing saves edits but does not sign." "Sign" "Sign" "Don't Sign"
+  should_sign=$?
 fi
 
-mv $CIPHR_TEMP $TARGET
+if [ $should_sign -ne 0 ]; then
+  gpg --clear-sign -u Lanny --batch --yes --output $CIPHR_TEMP $PLAIN_TEMP
+  gpg_rc=$?
+
+  if [ $gpg_rc -ne 0 ]; then
+    notify "Signing failed. A temporary plaintext file is stored at: $PLAIN_TEMP"
+    exit 4
+  fi
+  mv $CIPHR_TEMP $TARGET
+else
+  mv $PLAIN_TEMP $TARGET
+fi
 
 exit 0
 
