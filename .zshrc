@@ -30,6 +30,8 @@ if [[ -a ~/.zshrc-local ]]; then
   source ~/.zshrc-local
 fi
 
+export PATH="$PATH:$HOME/.bin"
+
 # User configuration
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then

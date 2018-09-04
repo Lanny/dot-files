@@ -11,3 +11,7 @@ ln qutebrowser/autoconfig.yml ~/Library/Preferences/qutebrowser
 brew install zsh
 curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 chsh -s "$(which zsh)"
+
+# Link up zsh config
+ln .zshrc ~/
+touch ~/.zhsrc-local
