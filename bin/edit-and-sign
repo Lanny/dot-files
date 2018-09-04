@@ -14,7 +14,7 @@ function notify {
   if [ $VISUAL_MODE -ne 0 ]; then
     osascript -e "tell app \"System Events\" to display dialog \"$1\""
   else
-    >&2 echo "error"
+    >&2 echo $1
   fi
 }
 
@@ -43,7 +43,8 @@ done
 shift $(expr $OPTIND - 1) 
 
 if [ -z "$1" ]; then
-  notify "Missing file argument."
+  notify "Missing file argument.\n"
+  usage
   exit 1
 fi
 
@@ -51,6 +52,10 @@ TARGET=$1
 
 if [ $VISUAL_MODE -ne 0 ]; then
   EDITOR_ARGS+=('-g')
+  export PINENTRY_USER_DATA=""
+else
+  # Force pinentry over terminal
+  export PINENTRY_USER_DATA="USE_CURSES=1"
 fi
 
 $EDITOR $EDITOR_ARGS $TARGET
@@ -67,9 +72,6 @@ if [ $cp_rc -ne 0 ]; then
   notify "Failed to copy edited file to: $PLAIN_TEMP" 
   exit 3
 fi
-
-echo "$GPG_TTY"
-echo "$TTY"
 
 gpg --clear-sign -u Lanny --batch --yes --output $CIPHR_TEMP $PLAIN_TEMP
 gpg_rc=$?
