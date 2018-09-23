@@ -41,6 +41,15 @@ fi
 export LS_COLORS="di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
 export LSCOLORS="Gxfxcxdxbxegedabagacad"
 
+# Setup the prompt
+if [ $UID -eq 0 ]; then NCOLOR="green"; else NCOLOR="white"; fi
+
+if [[ -n $SSH_CONNECTION ]]; then
+  export PROMPT='[%{$fg[$NCOLOR]%}%B%n%b@%F{green}%m%f%{$reset_color%}:%{$fg[red]%}%30<...<%~%<<%{$reset_color%}]%(!.#.$) '
+else
+  export PROMPT='[%{$fg[$NCOLOR]%}%B%n%b%{$reset_color%}:%{$fg[red]%}%30<...<%~%<<%{$reset_color%}]%(!.#.$) '
+fi
+#
 # Vi mode
 bindkey -v
 
