@@ -15,3 +15,6 @@ chsh -s "$(which zsh)"
 # Link up zsh config
 ln .zshrc ~/
 touch ~/.zhsrc-local
+
+mkdir -p ~/.config/kitty
+ln kitty/kitty.conf ~/.config/kitty
