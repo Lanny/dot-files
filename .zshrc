@@ -21,7 +21,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # HIST_STAMPS="mm/dd/yyyy"
 
-plugins=(django)
+plugins=(django history-substring-search)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -37,8 +37,11 @@ export PATH="$PATH:$HOME/.bin"
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='mvim'
+  export EDITOR='vim'
 fi
+
+# Let pipenv know we're using zsh
+export PIPENV_SHELL=$(which zsh)
 
 export LS_COLORS="di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
 export LSCOLORS="Gxfxcxdxbxegedabagacad"
@@ -75,3 +78,10 @@ export PROJECT_HOME=$HOME/Devel
 
 # Disable the thing where typing a director name cds into it
 unsetopt AUTO_CD
+
+alias jpp="pbpaste | python -m json.tool"
+
+
+gsel() {
+  grep --color=always -r $@ | sel -p'^([^:]*):.*'
+}
