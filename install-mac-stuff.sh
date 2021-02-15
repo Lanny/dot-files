@@ -18,3 +18,6 @@ touch ~/.zhsrc-local
 
 mkdir -p ~/.config/kitty
 ln kitty/kitty.conf ~/.config/kitty
+
+mkdir ~/.bin
+ln bin ~/.bin
