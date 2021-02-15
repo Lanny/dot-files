@@ -40,6 +40,8 @@ else
   export EDITOR='vim'
 fi
 
+export FZF_DEFAULT_COMMAND='rg --files'
+
 # Let pipenv know we're using zsh
 export PIPENV_SHELL=$(which zsh)
 
@@ -84,4 +86,21 @@ alias jpp="pbpaste | python -m json.tool"
 
 gsel() {
   grep --color=always -r $@ | sel -p'^([^:]*):.*'
+}
+
+vims() {
+  uuidgen > ~/.vimsid
+  mvim --servername $(cat ~/.vimsid)
+}
+
+vimc() {
+  mvim --servername $(cat ~/.vimsid) --remote-send ":vsplit<CR>"
+  mvim --servername $(cat ~/.vimsid) --remote $@
+}
+
+op() {
+  FNAME=$(fzf)
+  if [ $? -eq 0 ];
+  then vimc $FNAME;
+  fi;
 }
