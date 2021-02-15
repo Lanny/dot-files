@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+FNAME="/tmp/pwedit/$(uuidgen)"
+
+mkdir -p /tmp/pwedit
+
+printf "Passphrase: "
+read -s PW <&1
+
+echo "$PW"
+
+cp ~/passwords "$FNAME.gpg"
+
+gpg --batch --passphrase "$PW" -d "$FNAME.gpg" > "$FNAME" 
+
+if [[ $? -eq 0 ]]
+then
+  vim $FNAME
+  gpg --batch --yes --passphrase "$PW" -o ~/passwords -c $FNAME
+else
+  echo "Failed to decrypt file, bailing."
+fi
+
+
+rm $FNAME

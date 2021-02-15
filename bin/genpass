@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -x
+printf "Basepass Pass: "
+read -s BPP <&1
+
+BASEPASS=$(gpg --batch --passphrase "$BPP" -d ~/basepass.gpg)
+
+if [[ $? -ne 0 ]]
+then
+  echo "Failed to decrypt file, bailing."
+  exit 1
+fi
+
+
+printf "Domain: "
+read DOMAIN <&1
+
+PHASH=$(echo "$BASEPASS$DOMAIN" | shasum -a1 - | head -c 40 | tail -c 20)
+echo "New Password is: aA1!${PHASH}"
+
