@@ -19,5 +19,8 @@ touch ~/.zhsrc-local
 mkdir -p ~/.config/kitty
 ln kitty/kitty.conf ~/.config/kitty
 
-mkdir ~/.bin
-ln bin ~/.bin
+mkdir -p ~/.bin
+ln bin/devil ~/.bin/
+ln bin/genpass ~/.bin/
+ln bin/pwedit ~/.bin/
+ln bin/sel ~/.bin/
