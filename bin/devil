@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+IKWID="$KITTY_WINDOW_ID"
+
+kitty @ set-tab-title main
+kitty @ goto-layout fat 
+
+kitty @ launch --type=window --keep-focus --cwd=$(pwd) 
+kitty @ launch --type=window --keep-focus --cwd=$(pwd) 
+
+BG_TAB_ID=$(kitty @ launch --type=tab --tab-title background --cwd=$(pwd))
+kitty @ goto-layout --match id:$BG_TAB_ID grid 
+kitty @ launch --type=window --keep-focus --cwd=$(pwd) 
+kitty @ launch --type=window --keep-focus --cwd=$(pwd) 
+kitty @ launch --type=window --keep-focus --cwd=$(pwd) 
+
+kitty @ focus-window --match "id:$IKWID"
