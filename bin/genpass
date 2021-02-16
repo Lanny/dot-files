@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 printf "Basepass Pass: "
 read -s BPP <&1
 
