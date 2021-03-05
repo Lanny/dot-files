@@ -1,3 +1,5 @@
+export DISABLE_AUTO_TITLE="true"
+
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 export UPDATE_ZSH_DAYS=128
@@ -31,6 +33,7 @@ if [[ -a ~/.zshrc-local ]]; then
 fi
 
 export PATH="$PATH:$HOME/.bin"
+export PATH="$PATH:/usr/local/bin"
 
 # User configuration
 # Preferred editor for local and remote sessions
@@ -104,3 +107,7 @@ op() {
   then vimc $FNAME;
   fi;
 }
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+
