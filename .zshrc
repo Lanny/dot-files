@@ -102,12 +102,22 @@ vimc() {
 }
 
 op() {
-  FNAME=$(fzf)
+  local IFS=$'\n'
+  if [ $# -eq 0 ]; then
+    lines=($(fzf --tiebreak=end --print-query --preview 'ptf {}'))
+  else
+    lines=($(fzf --tiebreak=end --print-query --preview 'ptf {}' --query $@))
+  fi;
+
   if [ $? -eq 0 ];
-  then vimc $FNAME;
+  then
+    final_query=$lines[1]
+    fname=$lines[2]
+    print -s "vimc $final_query";
+    print -s "vimc $fname";
+    vimc $fname;
   fi;
 }
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
-

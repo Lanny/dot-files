@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+import sys
+import os
+
+def get_path(path):
+    return os.path.join('.', os.path.normpath(path)).split(os.sep)
+
+def redify(s):
+    return '\u001b[31m' + s + '\033[0m'
+
+def render_pathspec(pathspec, red):
+    b = []
+    for idx, item in enumerate(pathspec):
+        if idx == len(pathspec) - 1:
+            b.append(redify('├') if red or item == 'r' else '├')
+            b.append(redify('──') if red else '──')
+        else:
+            b.append(redify('│  ') if item == 'r' else '│  ')
+
+
+    return ''.join(b)
+
+def print_level(name, pathspec, red=False):
+    path = render_pathspec(pathspec, red)
+    name = redify(name) if red else name
+    print('%s%s' % (path, name))
+
+def recur(idx, parts, pathspec):
+    cur_path = os.path.join(*parts[:idx+1])
+    files = [f for f in os.scandir(cur_path)]
+    is_final = idx == len(parts) - 2
+    on_path = True
+
+    if not is_final:
+        files = [f for f in files if f.is_dir()]
+
+
+    for fidx, f in enumerate(files):
+        red = False
+        is_critical_path = f.name == parts[idx+1]
+
+        if is_critical_path:
+            red = True
+            on_path = False
+
+        new_pathspec = pathspec + ('r' if on_path else 'n')
+        print_level(
+            f.name,
+            new_pathspec,
+            red=red
+        )
+
+        if not is_final and is_critical_path:
+            recur(idx+1, parts, new_pathspec)
+
+
+if __name__ == '__main__':
+    parts = get_path(sys.argv[1])
+    print(redify(parts[0]))
+    recur(0, parts, '')

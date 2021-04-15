@@ -47,3 +47,4 @@ ln bin/devil ~/.bin/
 ln bin/genpass ~/.bin/
 ln bin/pwedit ~/.bin/
 ln bin/sel ~/.bin/
+ln bin/ptf ~/.bin/
