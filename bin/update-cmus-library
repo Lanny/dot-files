@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cmus-remote -C clear
+cmus-remote -C "add /Volumes/The Money Store/music"
+cmus-remote -C "add /Volumes/The Money Store/music-org"
+cmus-remote -C "update-cache -f"
+

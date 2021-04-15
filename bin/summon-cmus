@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -x
+
+yabai -m query --windows --window | jq -c '.id' > ~/.yabaidata/LAST_WIN_ID
+
+CUR_DISPLAY_ID=$(yabai -m query --displays --display | jq -c '.index')
+EKIT=$(yabai -m query --windows | jq -c '[.[] | select (.title == "cmus")][0]')
+
+if [[ "$EKIT" == "null" ]]
+then
+  kitty -o='background=#222222' --title 'cmus' sh -c cmus 
+  sleep 1
+  EKIT=$(yabai -m query --windows | jq -c '[.[] | select (.title == "cmus")][0]')
+else
+  yabai -m window --deminimize $(echo $EKIT | jq -c '.id')
+fi
+
+CMUS_WIN_ID=$(echo $EKIT | jq -c '.id')
+
+
+CUR_CMUS_DISPLAY=$(echo $EKIT | jq -c '.display')
+if [[ "$CUR_CMUS_DISPLAY" != "$CUR_DISPLAY_ID" ]]
+then
+  yabai -m window "$CMUS_WIN_ID" --display "$CUR_DISPLAY_ID"
+fi
+
+yabai -m window --focus "$CMUS_WIN_ID"
+
+yabai -m config window_opacity on
+yabai -m config normal_window_opacity 0.50;
+
+yabai -m window "$CMUS_WIN_ID" --grid 4:4:1:1:2:2

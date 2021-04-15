@@ -79,6 +79,10 @@
 :: default : yabai -m config window_opacity off
 :: nav @ : yabai -m config window_opacity on; yabai -m config normal_window_opacity 0.75
 :: music : /Users/ryan.jenkins/.bin/summon-cmus
+:: mark @
+:: recall @
+
+f15 : cmus-remote -u
 
 f12 ; nav
 nav < f12 ; default
@@ -108,10 +112,15 @@ nav < p : yabai -m window --toggle float && yabai -m window --grid 4:4:1:1:2:2
 # Close stuff
 nav < d : yabai -m window --close
 
+# Volume control
+#nav < x : VOL=$(osascript -e 'get volume settings' | gawk 'match($0, /output volume:([0-9]+)/, a) {print (a[1] + 5) / 10.0}'); osascript -e "set Volume $VOL"
+#nav < z : VOL=$(osascript -e 'get volume settings' | gawk 'match($0, /output volume:([0-9]+)/, a) {print (a[1] - 5) / 10.0}'); osascript -e "set Volume $VOL"
+
 # cmus magicks
 nav < o ; music
-music < f12 ; nav
-music < escape : /Users/ryan.jenkins/.bin/banish-cmus; skhd -k "f12"; yabai -m window --focus $(cat ~/.yabaidata/LAST_WIN_ID)
+music < f13 ; nav
+music < escape : /Users/ryan.jenkins/.bin/banish-cmus; skhd -k "f13"; yabai -m window --focus $(cat ~/.yabaidata/LAST_WIN_ID)
+music < f12 : skhd -k "escape"
 
 # Monitor select
 f5 : yabai -m display --focus 1
@@ -120,6 +129,30 @@ f7 : yabai -m display --focus 3
 nav < 1 : yabai -m display --focus 1
 nav < 2 : yabai -m display --focus 2
 nav < 3 : yabai -m display --focus 3
+
+
+nav < m; mark
+nav < 0x32; recall
+
+mark < escape ; nav
+mark < a : /Users/ryan.jenkins/.bin/yabai-mark a; skhd -k "escape"
+mark < b : /Users/ryan.jenkins/.bin/yabai-mark b; skhd -k "escape"
+mark < c : /Users/ryan.jenkins/.bin/yabai-mark c; skhd -k "escape"
+mark < d : /Users/ryan.jenkins/.bin/yabai-mark d; skhd -k "escape"
+mark < e : /Users/ryan.jenkins/.bin/yabai-mark e; skhd -k "escape"
+mark < f : /Users/ryan.jenkins/.bin/yabai-mark f; skhd -k "escape"
+mark < g : /Users/ryan.jenkins/.bin/yabai-mark g; skhd -k "escape"
+mark < h : /Users/ryan.jenkins/.bin/yabai-mark h; skhd -k "escape"
+
+recall < escape ; nav
+recall < a : /Users/ryan.jenkins/.bin/yabai-recall a; skhd -k "escape"
+recall < b : /Users/ryan.jenkins/.bin/yabai-recall b; skhd -k "escape"
+recall < c : /Users/ryan.jenkins/.bin/yabai-recall c; skhd -k "escape"
+recall < d : /Users/ryan.jenkins/.bin/yabai-recall d; skhd -k "escape"
+recall < e : /Users/ryan.jenkins/.bin/yabai-recall e; skhd -k "escape"
+recall < f : /Users/ryan.jenkins/.bin/yabai-recall f; skhd -k "escape"
+recall < g : /Users/ryan.jenkins/.bin/yabai-recall g; skhd -k "escape"
+recall < h : /Users/ryan.jenkins/.bin/yabai-recall h; skhd -k "escape"
 
 # swap managed window
 # shift + alt - h : yabai -m window --swap north

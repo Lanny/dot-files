@@ -48,3 +48,6 @@ ln bin/genpass ~/.bin/
 ln bin/pwedit ~/.bin/
 ln bin/sel ~/.bin/
 ln bin/ptf ~/.bin/
+ln bin/summon-cmus ~/.bin/
+ln bin/banish-cmus ~/.bin/
+ln bin/update-cmus-library ~/.bin/
